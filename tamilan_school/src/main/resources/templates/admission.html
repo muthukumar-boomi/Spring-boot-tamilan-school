@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamilan School · Admission Manager (Width Increase on Add/Update)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: radial-gradient(circle at 10% 20%, rgba(238,242,249,1) 0%, rgba(224,232,242,1) 100%);
+            padding: 32px;
+            min-height: 100vh;
+            background-image: url('/img/erika-fletcher-MZxqc6n9qCw-unsplash.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(2px);
+            z-index: -1;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+
+        .card {
+            border: none;
+            border-radius: 32px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(2px);
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 32px;
+            transition: transform 0.25s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 30px 45px -16px rgba(0, 0, 0, 0.2);
+        }
+        .card-header {
+            background: linear-gradient(115deg, #0f2c3d 0%, #1b4f6e 100%);
+            border-bottom: 4px solid #f5b042;
+            padding: 1.2rem 2rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.3px;
+        }
+        .card-header i { margin-right: 12px; color: #f5b042; }
+
+        .card-body { padding: 2rem; }
+
+        label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            color: #1e3a5f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        label i { width: 20px; color: #5b8caf; }
+        .form-control, .form-select, textarea {
+            border-radius: 44px;
+            border: 1.5px solid #e2edf2;
+            padding: 10px 18px;
+            width: 100%;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            background-color: #ffffff;
+        }
+        .form-control:focus, .form-select:focus, textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+            outline: none;
+            transform: scale(1.01);
+        }
+        .form-control[readonly] {
+            background-color: #f8fafc;
+            cursor: not-allowed;
+            border-color: #cbd5e1;
+        }
+        textarea { border-radius: 28px; resize: vertical; }
+
+        .btn-primary {
+            background: linear-gradient(105deg, #1f6392, #0e4a70);
+            border: none;
+            border-radius: 44px;
+            padding: 10px 32px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(105deg, #0e4a70, #0a3a57);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            border-radius: 44px;
+            padding: 10px 28px;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { background: #e2e8f0; transform: translateY(-1px); }
+        .btn-close-custom {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 44px;
+            padding: 10px 28px;
+            transition: all 0.2s;
+        }
+        .btn-close-custom:hover { background: #dc2626; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
+        .btn-outline-accent {
+            background: #fef9e6;
+            border: 1px solid #f5b042;
+            color: #b45309;
+            border-radius: 40px;
+            padding: 0.35rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-outline-accent:hover {
+            background: #f5b042;
+            color: #1e293b;
+            transform: translateY(-1px);
+        }
+
+        /* ---------- NORMAL TABLE STYLES (Default) ---------- */
+        .table-responsive .table {
+            min-width: 1400px;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+            padding: 0.85rem 0.75rem;
+            white-space: nowrap;
+        }
+        .table thead tr { background: #f1f5f9; }
+        .table thead th {
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .table tbody tr:hover { background: #fef9e6; }
+
+        /* ---------- WIDE MODE : WIDTH INCREASE (after Add/Update) ---------- */
+        .wide-table {
+            min-width: 1800px !important;
+            width: 100%;
+        }
+        .wide-table th,
+        .wide-table td {
+            padding: 1.1rem 1.2rem !important;
+            font-size: 0.95rem !important;
+            white-space: nowrap;
+            background-color: #ffffff;
+        }
+        .wide-table th {
+            font-size: 0.85rem !important;
+            background: #e6f0fa;
+        }
+        /* Optional: increase column widths proportionally */
+        .wide-table th:first-child, .wide-table td:first-child { padding-left: 1.5rem; }
+        .wide-table th:last-child, .wide-table td:last-child { padding-right: 1.5rem; }
+
+        .btn-sm.btn-primary, .btn-sm.btn-danger {
+            border: none;
+            margin: 0 3px;
+            border-radius: 30px;
+            padding: 0.35rem 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-sm.btn-primary { background: #eef2ff; color: #1f6392; }
+        .btn-sm.btn-primary:hover { background: #1f6392; color: white; transform: translateY(-2px); }
+        .btn-sm.btn-danger { background: #fff1f2; color: #b91c2c; }
+        .btn-sm.btn-danger:hover { background: #b91c2c; color: white; transform: translateY(-2px); }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 320px;
+            border-radius: 60px;
+            border: none;
+            box-shadow: 0 15px 30px -10px rgba(0,0,0,0.2);
+            backdrop-filter: blur(4px);
+            animation: slideInRight 0.3s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .alert-success { background: linear-gradient(105deg, #10b981, #059669); color: white; }
+        .alert-danger { background: linear-gradient(105deg, #ef4444, #dc2626); color: white; }
+        .alert i { margin-right: 8px; }
+
+        .card-footer {
+            background: #fefefe;
+            border-top: 1px solid #eef2f8;
+            font-size: 0.75rem;
+            padding: 0.75rem 1.5rem;
+        }
+        .info-badge {
+            background: #e6f0fa;
+            border-radius: 30px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            color: #1e4a76;
+        }
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .alert { min-width: 260px; right: 10px; top: 10px; }
+            .btn { padding: 8px 20px; }
+            .wide-table { min-width: 100% !important; overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Toast Messages -->
+    <div th:if="${msg}" class="alert alert-success alert-dismissible fade show" role="alert" id="serverSuccessMsg">
+        <i class="fas fa-check-circle"></i> [[${msg}]]
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${err}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> [[${err}]]
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Add / Edit Form Card -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-plus-circle"></i> <span id="formTitle">Add New Admission</span>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/saveAdmissionData" id="admissionForm">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <label><i class="fas fa-id-card"></i> Student ID</label>
+                        <input type="text" name="id" id="admissionId" class="form-control" placeholder="e.g R01,R02...." required>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-user"></i> Student Name</label>
+                        <input type="text" name="name" id="studentName" class="form-control" required placeholder="Enter full name">
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-calendar-day"></i> Admission Date</label>
+                        <input type="date" name="date" id="date" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-birthday-cake"></i> Date of Birth</label>
+                        <input type="date" name="dob" id="dob" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-venus-mars"></i> Gender</label>
+                        <select name="gender" id="gender" class="form-select" required>
+                            <option value="" disabled selected>-- Select --</option>
+                            <option>Male</option><option>Female</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-school"></i> Class</label>
+                        <select name="classs" id="classs" class="form-select" required>
+                            <option value="" disabled selected>-- Select --</option>
+                            <option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option>
+                            <option>VI</option><option>VII</option><option>VIII</option><option>IX</option><option>X</option>
+                            <option>XI</option><option>XII</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-building"></i> Previous School</label>
+                        <input type="text" name="pschool" id="pschool" class="form-control" required placeholder="e.g., St. Mary's School">
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-home"></i> Accommodation</label>
+                        <select name="accommodation" id="accommodation" class="form-select" required>
+                            <option value="" disabled selected>-- Select --</option>
+                            <option>Day Scholar</option><option>Hosteller</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-user-tie"></i> Father Name</label>
+                        <input type="text" name="fname" id="fname" class="form-control" required placeholder="Father full name">
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-user-tie"></i> Mother Name</label>
+                        <input type="text" name="mname" id="mname" class="form-control" required placeholder="Mother full name">
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-phone-alt"></i> Mobile</label>
+                        <input type="tel" name="mobile" id="mobile" class="form-control" pattern="[0-9]{10}" required placeholder="10-digit mobile number">
+                    </div>
+                    <div class="col-md-12">
+                        <label><i class="fas fa-map-marker-alt"></i> Address</label>
+                        <textarea name="address" id="address" class="form-control" rows="2" required placeholder="Door No, Street, City, Pincode..."></textarea>
+                    </div>
+                </div>
+                <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+                    <button type="button" class="btn btn-close-custom" onclick="window.location.href='/#modules'">
+                        <i class="fas fa-times me-2"></i> Close
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                        <i class="fas fa-undo-alt me-2"></i> Clear
+                    </button>
+                    <button type="submit" id="submitBtn" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Records Table Card -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+            <div><i class="fas fa-user-graduate"></i> Admission Records</div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive" id="tableResponsiveWrapper">
+                <table class="table table-bordered table-striped align-middle mb-0" id="admissionTable">
+                    <thead>
+                        <tr>
+                            <th>No</th><th>ID</th><th>Student Name</th><th>Date</th><th>DOB</th><th>Gender</th>
+                            <th>Class</th><th>Prev School</th><th>Accommodation</th><th>Father</th><th>Mother</th>
+                            <th>Mobile</th><th>Address</th><th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="a, stat : ${admission}">
+                            <td th:text="${stat.count}">1</td>
+                            <td th:text="${a.id}">A001</td>
+                            <td th:text="${a.name}">John Doe</td>
+                            <td th:text="${a.date}">2025-04-16</td>
+                            <td th:text="${a.dob}">2010-05-15</td>
+                            <td th:text="${a.gender}">Male</td>
+                            <td th:text="${a.classs}">X</td>
+                            <td th:text="${a.pschool}">ABC School</td>
+                            <td th:text="${a.accommodation}">Day Scholar</td>
+                            <td th:text="${a.fname}">Robert Doe</td>
+                            <td th:text="${a.mname}">Jane Doe</td>
+                            <td th:text="${a.mobile}">9876543210</td>
+                            <td th:text="${a.address}">123 Main Street, City</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-sm btn-primary" title="Edit" th:onclick="editAdmission([[${a}]])"><i class="fas fa-edit"></i> Edit</button>
+                                    <a th:href="@{/admission/delete/{id}(id=${a.id})}" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash-alt"></i> Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(admission)}">
+                            <td colspan="14" class="text-center py-4 text-muted">No admission records found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-between align-items-center flex-wrap">
+            <span><i class="fas fa-clock"></i> Last updated: <span th:text="${#dates.format(#dates.createNow(), 'dd-MM-yyyy HH:mm')}"></span></span>
+            <span><i class="fas fa-list-check"></i> Total records: <span th:text="${#lists.size(admission)}">0</span></span>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const submitBtn = document.getElementById('submitBtn');
+    const formTitleSpan = document.getElementById('formTitle');
+    const admissionTable = document.getElementById('admissionTable');
+
+    // Clear form for new entry – ID is EMPTY and EDITABLE (no auto‑generation)
+    function clearForm() {
+        submitBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save';
+        formTitleSpan.innerHTML = 'Add New Admission';
+        
+        // ID field: empty, editable, user types any ID
+        document.getElementById('admissionId').value = '';
+        document.getElementById('admissionId').readOnly = false;
+        
+        document.getElementById('studentName').value = '';
+        document.getElementById('date').value = '';
+        document.getElementById('dob').value = '';
+        document.getElementById('gender').value = '';
+        document.getElementById('classs').value = '';
+        document.getElementById('pschool').value = '';
+        document.getElementById('accommodation').value = '';
+        document.getElementById('fname').value = '';
+        document.getElementById('mname').value = '';
+        document.getElementById('mobile').value = '';
+        document.getElementById('address').value = '';
+    }
+
+    // Edit existing entry – ID remains read‑only (cannot change primary key)
+    window.editAdmission = function(a) {
+        submitBtn.innerHTML = '<i class="fas fa-save me-2"></i> Update';
+        formTitleSpan.innerHTML = 'Edit Admission Record';
+        
+        document.getElementById('admissionId').value = a.id;
+        document.getElementById('admissionId').readOnly = true;   // keep original ID
+        
+        document.getElementById('studentName').value = a.name;
+        document.getElementById('date').value = a.date;
+        document.getElementById('dob').value = a.dob;
+        document.getElementById('gender').value = a.gender;
+        document.getElementById('classs').value = a.classs;
+        document.getElementById('pschool').value = a.pschool;
+        document.getElementById('accommodation').value = a.accommodation;
+        document.getElementById('fname').value = a.fname;
+        document.getElementById('mname').value = a.mname;
+        document.getElementById('mobile').value = a.mobile;
+        document.getElementById('address').value = a.address;
+        
+        document.querySelector('.card-body').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // ---------- WIDTH INCREASE LOGIC (unchanged) ----------
+    function applyWideMode() {
+        if (admissionTable && !admissionTable.classList.contains('wide-table')) {
+            admissionTable.classList.add('wide-table');
+            const toast = document.createElement('div');
+            toast.className = 'position-fixed bottom-0 end-0 m-3 bg-dark text-white p-2 rounded-pill';
+            toast.style.fontSize = '0.75rem';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = '<i class="fas fa-expand-alt me-1"></i> Table width increased (after Add/Update)';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+    }
+
+    function removeWideMode() {
+        if (admissionTable && admissionTable.classList.contains('wide-table')) {
+            admissionTable.classList.remove('wide-table');
+            const note = document.createElement('div');
+            note.className = 'position-fixed bottom-0 end-0 m-3 bg-secondary text-white p-2 rounded-pill';
+            note.style.fontSize = '0.75rem';
+            note.innerHTML = '<i class="fas fa-compress-alt me-1"></i> Normal width restored';
+            document.body.appendChild(note);
+            setTimeout(() => note.remove(), 1500);
+        }
+    }
+
+    // Detect Add/Update after page load (success message)
+    function detectAddOrUpdateAndIncreaseWidth() {
+        const successAlert = document.querySelector('.alert-success');
+        if (successAlert) {
+            const msgText = successAlert.innerText.toLowerCase();
+            const isAddOrUpdate = 
+                msgText.includes('saved') || 
+                msgText.includes('updated') || 
+                msgText.includes('added') ||
+                (msgText.includes('record') && msgText.includes('success') && !msgText.includes('deleted'));
+            if (isAddOrUpdate && !msgText.includes('deleted')) {
+                applyWideMode();
+            }
+        }
+    }
+
+    // On page load: clear form (empty ID), check for width increase
+    window.addEventListener('DOMContentLoaded', function() {
+        clearForm();
+        detectAddOrUpdateAndIncreaseWidth();
+    });
+
+    // Auto‑dismiss alerts after 5 seconds
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(alert => {
+            let bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
+</body>
+</html>

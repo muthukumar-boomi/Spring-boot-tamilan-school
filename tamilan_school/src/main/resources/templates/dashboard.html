@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Tamilan Academy – Smart Campus Portal</title>
+  <link rel="icon" type="image/png" href="img/icons8-school-48.png">
+  <!-- Font Awesome 6 + Google Fonts (Raleway) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* ---------- Global Reset ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Raleway', sans-serif;
+      color: #333;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      scroll-behavior: smooth;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+      font-size: 36px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #d82a4e, #ff6b4a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 15px;
+    }
+
+    .section-title p {
+      font-size: 18px;
+      color: #555;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .spad {
+      padding: 80px 0;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #d82a4e;
+      color: #fff;
+      font-weight: 600;
+      padding: 12px 30px;
+      border-radius: 40px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 12px rgba(216, 42, 78, 0.2);
+    }
+
+    .btn:hover {
+      background: #b81e3e;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(216, 42, 78, 0.4);
+    }
+
+    /* ----- Header ----- */
+    .header-section {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 12px 0;
+    }
+
+    .header-section .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .site-logo {
+      font-size: 28px;
+      font-weight: 800;
+      color: #d82a4e;
+    }
+
+    .site-logo span {
+      color: #222;
+    }
+
+    .nav-switch {
+      display: none;
+      font-size: 26px;
+      cursor: pointer;
+      color: #d82a4e;
+    }
+
+    .main-menu ul {
+      display: flex;
+      align-items: center;
+      gap: 35px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .main-menu ul li a {
+      font-weight: 600;
+      color: #2c3e50;
+      transition: 0.3s;
+      padding: 5px 0;
+      border-bottom: 2px solid transparent;
+    }
+
+    .main-menu ul li a:hover,
+    .main-menu ul li a.active {
+      color: #d82a4e;
+      border-bottom-color: #d82a4e;
+    }
+
+    /* ----- Hero Video ----- */
+    .hero-video-section {
+      position: relative;
+      overflow: hidden;
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: #fff;
+    }
+
+    #bg-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    .video-overlay {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+      width: 100%;
+      padding: 120px 0;
+    }
+
+    .hero-text h1 {
+      font-size: 56px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-text h1 em {
+      font-style: normal;
+      color: #ffb347;
+    }
+
+    .hero-text p {
+      font-size: 20px;
+      max-width: 700px;
+      margin: 0 auto 35px;
+      opacity: 0.95;
+    }
+
+    /* ----- Module Cards ----- */
+    .modules-section {
+      background: #f8fafc;
+    }
+
+    .module-card {
+      background: white;
+      padding: 35px 20px;
+      border-radius: 24px;
+      text-align: center;
+      transition: 0.35s ease;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      height: 100%;
+    }
+
+    .module-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 35px -12px rgba(216, 42, 78, 0.2);
+      border-color: #d82a4e;
+    }
+
+    .module-card i {
+      font-size: 48px;
+      background: linear-gradient(135deg, #d82a4e, #ff6b4a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 20px;
+    }
+
+    .module-card h4 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .module-card p {
+      color: #5a6e7c;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .module-card .btn-sm {
+      background: #d82a4e;
+      color: white;
+      border-radius: 40px;
+      padding: 8px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-block;
+      transition: 0.2s;
+    }
+
+    .module-card .btn-sm:hover {
+      background: #b81e3e;
+      transform: scale(1.02);
+    }
+
+    /* ----- Footer ----- */
+    .footer-section {
+      background: #111;
+      color: #bbb;
+      padding: 40px 0 20px;
+      text-align: center;
+    }
+
+    .social-links {
+      margin-bottom: 20px;
+    }
+
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin: 0 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .social-links a:nth-child(1):hover {
+      background: #1877f2;
+      transform: translateY(-5px);
+    }
+
+    .social-links a:nth-child(2):hover {
+      background: #1da1f2;
+      transform: translateY(-5px);
+    }
+
+    .social-links a:nth-child(3):hover {
+      background: radial-gradient(circle at 30% 110%, #fdf497, #fd5949, #d6249f, #285aeb);
+      transform: translateY(-5px);
+    }
+
+    .social-links a:nth-child(4):hover {
+      background: #0077b5;
+      transform: translateY(-5px);
+    }
+
+    .footer-section p {
+      font-size: 14px;
+      margin-top: 15px;
+    }
+
+    /* Back to top */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #d82a4e;
+      color: white;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.3s;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .nav-switch {
+        display: block;
+      }
+
+      .main-menu {
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 20px;
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+        display: none;
+        border-radius: 0 0 20px 20px;
+      }
+
+      .main-menu.show {
+        display: block;
+      }
+
+      .main-menu ul {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .hero-text h1 {
+        font-size: 38px;
+      }
+
+      .hero-text p {
+        font-size: 18px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .hero-text h1 {
+        font-size: 32px;
+      }
+
+      .section-title h2 {
+        font-size: 28px;
+      }
+    }
+
+    /* preloader */
+    #preloder {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #d82a4e;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="preloder">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header-section">
+    <div class="container">
+      <div class="site-logo">Tamilan<span>Academy</span></div>
+      <div class="nav-switch"><i class="fas fa-bars"></i></div>
+      <nav class="main-menu">
+        <ul>
+          <li><a href="#hero" class="active">Home</a></li>
+          <li><a href="#modules">Modules</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero-video-section">
+    <video autoplay muted loop id="bg-video">
+      <source src="https://themewagon.github.io/grad-school/assets/images/course-video.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay">
+      <div class="container">
+        <div class="hero-text">
+         
+          <a href="#modules" class="btn">Explore Modules</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modules Section -->
+  <section id="modules" class="modules-section spad">
+    <div class="container">
+      <div class="section-title">
+        <h2>Smart Management Modules</h2>
+       
+      </div>
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+          <div class="module-card">
+            <i class="fas fa-pencil-alt"></i>
+            <h4>Attendance</h4>
+            <p>Real‑time student attendance tracking.</p>
+            <a href="attendance" class="btn-sm">Access →</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="module-card">
+            <i class="fas fa-graduation-cap"></i>
+            <h4>Student Record</h4>
+            <p>Complete academic & personal profiles.</p>
+            <a href="student_record" class="btn-sm">Access →</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="module-card">
+            <i class="fas fa-user-plus"></i>
+            <h4>Admission</h4>
+            <p>Online application & enrollment.</p>
+            <a href="admission" class="btn-sm">Access →</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="module-card">
+            <i class="fas fa-file-alt"></i>
+            <h4>Exam</h4>
+            <p>Schedule, results, report cards.</p>
+            <a href="exam" class="btn-sm">Access →</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="module-card">
+            <i class="fas fa-users"></i>
+            <h4>Staff Record</h4>
+            <p>Faculty database.</p>
+            <a href="staff_record" class="btn-sm">Access →</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="module-card">
+            <i class="fas fa-calendar-alt"></i>
+            <h4>Timetable</h4>
+            <p>Class schedules.</p>
+            <a href="timetable" class="btn-sm">Access →</a>
+          </div>
+        </div>
+        <div class="col-lg-4 offset-lg-4 col-md-6">
+          <div class="module-card">
+            <i class="fas fa-credit-card"></i>
+            <h4>Fees</h4>
+            <p>Online collection, receipts.</p>
+            <a href="fees" class="btn-sm">Access →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer-section">
+    <div class="container">
+    
+      <p><i class="far fa-copyright"></i> 2026 Tamilan Academy. All rights reserved <i class="fas fa-heart" style="color:#d82a4e;"></i>  Designed with Me.</p>
+    </div>
+  </footer>
+
+  <!-- Back to Top Button -->
+  <div class="back-to-top" id="backToTop">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Preloader
+    window.addEventListener('load', () => document.getElementById('preloder').style.display = 'none');
+
+    // Mobile menu toggle
+    document.querySelector('.nav-switch').addEventListener('click', () => document.querySelector('.main-menu').classList.toggle('show'));
+
+    // Remove any accidental "#simple" from URL (just in case)
+    if (window.location.hash === '#simple') {
+      window.location.hash = '#modules';
+    }
+
+    // Active menu highlight on scroll
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section[id]');
+      let current = '';
+      sections.forEach(sec => {
+        const top = sec.offsetTop - 100;
+        if (pageYOffset >= top) current = sec.getAttribute('id');
+      });
+      document.querySelectorAll('.main-menu a').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) link.classList.add('active');
+      });
+
+      // Back to top button visibility
+      const backBtn = document.getElementById('backToTop');
+      if (window.scrollY > 300) backBtn.classList.add('show');
+      else backBtn.classList.remove('show');
+    });
+
+    // Back to top functionality
+    document.getElementById('backToTop').addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
+</body>
+
+</html>

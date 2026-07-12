@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Tamilan School · Attendance Management (Auto Fill from Student)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: radial-gradient(circle at 10% 20%, rgba(238,242,249,1) 0%, rgba(224,232,242,1) 100%);
+            padding: 32px;
+            min-height: 100vh;
+            background-image: url('/img/ivan-aleksic-PDRFeeDniCk-unsplash.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(2px);
+            z-index: -1;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        .card {
+            border: none;
+            border-radius: 32px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(2px);
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 32px;
+            transition: transform 0.25s ease;
+        }
+        .card:hover { transform: translateY(-4px); }
+        .card-header {
+            background: linear-gradient(115deg, #0f2c3d 0%, #1b4f6e 100%);
+            border-bottom: 4px solid #f5b042;
+            padding: 1.2rem 2rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .card-header i { margin-right: 12px; color: #f5b042; }
+        .card-body { padding: 2rem; }
+        label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            color: #1e3a5f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        label i { width: 20px; color: #5b8caf; }
+        .form-control, .form-select {
+            border-radius: 44px;
+            border: 1.5px solid #e2edf2;
+            padding: 10px 18px;
+            width: 100%;
+            font-size: 0.9rem;
+            background-color: #ffffff;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+            outline: none;
+        }
+        .btn-primary {
+            background: linear-gradient(105deg, #1f6392, #0e4a70);
+            border: none;
+            border-radius: 44px;
+            padding: 10px 32px;
+            font-weight: 600;
+        }
+        .btn-primary:hover { background: linear-gradient(105deg, #0e4a70, #0a3a57); transform: translateY(-2px); }
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            border-radius: 44px;
+            padding: 10px 28px;
+        }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-close-custom {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 44px;
+            padding: 10px 28px;
+        }
+        .btn-close-custom:hover { background: #dc2626; }
+        .table-responsive .table {
+            min-width: 1000px;
+        }
+        .table th, .table td { vertical-align: middle; }
+        .table thead tr { background: #f1f5f9; }
+        .table thead th {
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 1rem 0.75rem;
+            white-space: nowrap;
+        }
+        .compact-table th, .compact-table td {
+            white-space: nowrap;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+        }
+        .badge-present, .badge-absent, .badge-late, .badge-holiday {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
+        .badge-present { background: #10b981; color: white; }
+        .badge-absent { background: #ef4444; color: white; }
+        .badge-late { background: #f59e0b; color: white; }
+        .badge-holiday { background: #8b5cf6; color: white; }
+        .btn-sm.btn-primary, .btn-sm.btn-danger {
+            border: none;
+            margin: 0 3px;
+            border-radius: 30px;
+            padding: 0.35rem 0.9rem;
+            font-weight: 500;
+        }
+        .btn-sm.btn-primary { background: #eef2ff; color: #1f6392; }
+        .btn-sm.btn-primary:hover { background: #1f6392; color: white; }
+        .btn-sm.btn-danger { background: #fff1f2; color: #b91c2c; }
+        .btn-sm.btn-danger:hover { background: #b91c2c; color: white; }
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 320px;
+            border-radius: 60px;
+            animation: slideInRight 0.3s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .alert-success { background: linear-gradient(105deg, #10b981, #059669); color: white; }
+        .alert-danger { background: linear-gradient(105deg, #ef4444, #dc2626); color: white; }
+        .card-footer {
+            background: #fefefe;
+            border-top: 1px solid #eef2f8;
+            font-size: 0.75rem;
+            padding: 0.75rem 1.5rem;
+        }
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .alert { min-width: 260px; right: 10px; top: 10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:if="${msg}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> [[${msg}]]
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${err}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> [[${err}]]
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-plus-circle"></i> <span id="formTitle">Add New Attendance</span>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/saveAttendanceData" id="attendanceForm">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label><i class="fas fa-id-card"></i> Student ID</label>
+                        <input type="text" name="id" id="rollId" class="form-control" placeholder="Enter Student ID (e.g., R01...)" required autocomplete="off">
+                    </div>
+                    <div class="col-md-6">
+                        <label><i class="fas fa-user"></i> Student Name (Auto-filled)</label>
+                        <input type="text" name="name" id="studentName" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-venus-mars"></i> Gender (Auto-filled)</label>
+                        <select name="gender" id="gender" class="form-select" required>
+                            <option value="" disabled selected>-- Select --</option>
+                            <option>Male</option><option>Female</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-school"></i> Class (Auto-filled)</label>
+                        <select name="classs" id="classs" class="form-select" required>
+                            <option value="" disabled selected>-- Select --</option>
+                            <option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option>
+                            <option>VI</option><option>VII</option><option>VIII</option><option>IX</option><option>X</option>
+                            <option>XI</option><option>XII</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-users"></i> Section (Auto-filled)</label>
+                        <select name="section" id="section" class="form-select" required>
+                            <option value="" disabled selected>-- Select --</option>
+                            <option>A</option><option>B</option><option>C</option><option>D</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-calendar-alt"></i> Date</label>
+                        <input type="date" name="date" id="date" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-flag-checkered"></i> Status</label>
+                        <select name="status" id="status" class="form-select" required>
+                            <option value="" disabled selected>-- Select --</option>
+                            <option>Present</option><option>Absent</option><option>Late</option><option>Holiday</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+                    <button type="button" class="btn btn-close-custom" onclick="window.location.href='/#modules'">
+                        <i class="fas fa-times me-2"></i> Close
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                        <i class="fas fa-undo-alt me-2"></i> Clear
+                    </button>
+                    <button type="submit" id="submitBtn" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-calendar-check"></i> Attendance Records
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle mb-0" id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>No</th><th>Roll No</th><th>Student Name</th><th>Gender</th>
+                            <th>Class</th><th>Section</th><th>Date</th><th>Status</th><th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="att, stat : ${attendance}">
+                            <td th:text="${stat.count}">1</td>
+                            <td th:text="${att.id}">R001</td>
+                            <td th:text="${att.name}">John Doe</td>
+                            <td th:text="${att.gender}">Male</td>
+                            <td th:text="${att.classs}">X</td>
+                            <td th:text="${att.section}">A</td>
+                            <td th:text="${att.date}">2025-04-16</td>
+                            <td>
+                                <span th:class="${att.status=='Present'}?'badge-present':(${att.status=='Absent'}?'badge-absent':(${att.status=='Late'}?'badge-late':'badge-holiday'))" th:text="${att.status}">Present</span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-sm btn-primary" title="Edit" th:data-id="${att.id}" th:data-name="${att.name}" th:data-gender="${att.gender}" th:data-classs="${att.classs}" th:data-section="${att.section}" th:data-date="${att.date}" th:data-status="${att.status}" onclick="editAttendance(this)">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <a th:href="@{/attendance/delete/{id}(id=${att.id})}" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(attendance)}">
+                            <td colspan="9" class="text-center py-4 text-muted">No attendance records found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <span><i class="fas fa-clock"></i> Last updated: <span th:text="${#dates.format(#dates.createNow(), 'dd-MM-yyyy HH:mm')}"></span></span>
+            <span><i class="fas fa-list-check"></i> Total records: <span th:text="${#lists.size(attendance)}">0</span></span>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let isEditMode = false;
+    let editingId = null;
+
+    function setSelectValue(selectEl, value) {
+        if (!value) return;
+        for (let i = 0; i < selectEl.options.length; i++) {
+            if (selectEl.options[i].value === value) {
+                selectEl.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
+    async function fetchStudentData(rollId) {
+        if (!rollId) return false;
+        try {
+            const response = await fetch(`/getStudentData/${rollId}`);
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('studentName').value = data.name || '';
+                setSelectValue(document.getElementById('gender'), data.gender);
+                setSelectValue(document.getElementById('classs'), data.classs);
+                setSelectValue(document.getElementById('section'), data.section);
+                return true;
+            } else if (response.status === 404) {
+                alert('Roll Number not found in student records. Please enter a valid Roll Number.');
+                document.getElementById('studentName').value = '';
+                document.getElementById('gender').selectedIndex = 0;
+                document.getElementById('classs').selectedIndex = 0;
+                document.getElementById('section').selectedIndex = 0;
+                return false;
+            } else {
+                alert('Error fetching student data.');
+                return false;
+            }
+        } catch (error) {
+            console.error("Fetch error:", error);
+            alert('Could not connect to server.');
+            return false;
+        }
+    }
+
+    document.getElementById('rollId').addEventListener('blur', function() {
+        if (!isEditMode) {
+            const id = this.value.trim();
+            if (id) fetchStudentData(id);
+        }
+    });
+
+    function clearForm() {
+        isEditMode = false;
+        editingId = null;
+        document.getElementById('formTitle').innerHTML = 'Add New Attendance';
+        document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save me-2"></i> Save';
+        document.getElementById('rollId').value = '';
+        document.getElementById('rollId').readOnly = false;
+        document.getElementById('studentName').value = '';
+        document.getElementById('gender').selectedIndex = 0;
+        document.getElementById('classs').selectedIndex = 0;
+        document.getElementById('section').selectedIndex = 0;
+        document.getElementById('date').value = '';
+        document.getElementById('status').selectedIndex = 0;
+        document.getElementById('rollId').focus();
+    }
+
+    function editAttendance(btn) {
+        isEditMode = true;
+        editingId = btn.getAttribute('data-id');
+        document.getElementById('formTitle').innerHTML = 'Edit Attendance';
+        document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save me-2"></i> Update';
+        document.getElementById('rollId').value = editingId;
+        document.getElementById('rollId').readOnly = true;
+        document.getElementById('studentName').value = btn.getAttribute('data-name');
+        setSelectValue(document.getElementById('gender'), btn.getAttribute('data-gender'));
+        setSelectValue(document.getElementById('classs'), btn.getAttribute('data-classs'));
+        setSelectValue(document.getElementById('section'), btn.getAttribute('data-section'));
+        document.getElementById('date').value = btn.getAttribute('data-date');
+        setSelectValue(document.getElementById('status'), btn.getAttribute('data-status'));
+        document.querySelector('.card-body').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function applyCompactTable() {
+        const table = document.getElementById('attendanceTable');
+        if (table && !table.classList.contains('compact-table')) {
+            table.classList.add('compact-table');
+            const toast = document.createElement('div');
+            toast.className = 'position-fixed bottom-0 end-0 m-3 bg-dark text-white p-2 rounded-pill';
+            toast.style.fontSize = '0.75rem';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = '<i class="fas fa-compress-alt me-1"></i> Table width optimized';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+    }
+
+    function detectAndCompact() {
+        const successAlert = document.querySelector('.alert-success');
+        if (successAlert) {
+            const msgText = successAlert.innerText.toLowerCase();
+            if (msgText.includes('added') || msgText.includes('updated')) {
+                applyCompactTable();
+            }
+        }
+    }
+
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(alert => {
+            let bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+
+    window.onload = function() {
+        clearForm();
+        detectAndCompact();
+    };
+</script>
+</body>
+</html>

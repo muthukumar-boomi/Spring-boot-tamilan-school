@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Tamilan School · Student Management (Auto Fill from Admission)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: radial-gradient(circle at 10% 20%, rgba(238,242,249,1) 0%, rgba(224,232,242,1) 100%);
+            padding: 32px;
+            min-height: 100vh;
+            background-image: url('/img/milin-john-ausW6j0RGrg-unsplash.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(2px);
+            z-index: -1;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+
+        .card {
+            border: none;
+            border-radius: 32px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(2px);
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
+            margin-bottom: 32px;
+            transition: transform 0.25s ease;
+        }
+        .card:hover { transform: translateY(-4px); }
+        .card-header {
+            background: linear-gradient(115deg, #0f2c3d 0%, #1b4f6e 100%);
+            border-bottom: 4px solid #f5b042;
+            padding: 1.2rem 2rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .card-header i { margin-right: 12px; color: #f5b042; }
+        .card-body { padding: 2rem; }
+
+        label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            color: #1e3a5f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        label i { width: 20px; color: #5b8caf; }
+        .form-control, .form-select, textarea {
+            border-radius: 44px;
+            border: 1.5px solid #e2edf2;
+            padding: 10px 18px;
+            width: 100%;
+            font-size: 0.9rem;
+            background-color: #ffffff;
+        }
+        .form-control:focus, .form-select:focus, textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+            outline: none;
+        }
+        textarea { border-radius: 28px; resize: vertical; }
+
+        .btn-primary {
+            background: linear-gradient(105deg, #1f6392, #0e4a70);
+            border: none;
+            border-radius: 44px;
+            padding: 10px 32px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background: linear-gradient(105deg, #0e4a70, #0a3a57); transform: translateY(-2px); }
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            border-radius: 44px;
+            padding: 10px 28px;
+        }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-close-custom {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 44px;
+            padding: 10px 28px;
+        }
+        .btn-close-custom:hover { background: #dc2626; }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+            padding: 0.7rem 0.5rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .table thead tr { background: #f1f5f9; }
+        .table thead th {
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            background: #f1f5f9;
+        }
+        .table tbody tr:hover { background: #fef9e6; }
+
+        .compact-table {
+            min-width: 100% !important;
+            table-layout: fixed;
+        }
+        .compact-table th, .compact-table td {
+            white-space: nowrap;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+        }
+        .compact-table th:nth-child(1), .compact-table td:nth-child(1) { width: 3%; }
+        .compact-table th:nth-child(2), .compact-table td:nth-child(2) { width: 6%; }
+        .compact-table th:nth-child(3), .compact-table td:nth-child(3) { width: 7%; }
+        .compact-table th:nth-child(4), .compact-table td:nth-child(4) { width: 4%; }
+        .compact-table th:nth-child(5), .compact-table td:nth-child(5) { width: 9%; }
+        .compact-table th:nth-child(6), .compact-table td:nth-child(6) { width: 5%; }
+        .compact-table th:nth-child(7), .compact-table td:nth-child(7) { width: 4%; }
+        .compact-table th:nth-child(8), .compact-table td:nth-child(8) { width: 4%; }
+        .compact-table th:nth-child(9), .compact-table td:nth-child(9) { width: 4%; }
+        .compact-table th:nth-child(10), .compact-table td:nth-child(10) { width: 4%; }
+        .compact-table th:nth-child(11), .compact-table td:nth-child(11) { width: 8%; }
+        .compact-table th:nth-child(12), .compact-table td:nth-child(12) { width: 6%; }
+        .compact-table th:nth-child(13), .compact-table td:nth-child(13) { width: 10%; }
+        .compact-table th:nth-child(14), .compact-table td:nth-child(14) { width: 6%; }
+
+        .badge-blood {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            background: #334155;
+            color: white;
+            width: fit-content;
+            min-width: 48px;
+        }
+
+        .btn-sm.btn-primary, .btn-sm.btn-danger {
+            border: none;
+            margin: 0 2px;
+            border-radius: 30px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.7rem;
+        }
+        .btn-sm.btn-primary {
+            background: #eef2ff;
+            color: #1f6392;
+        }
+        .btn-sm.btn-primary:hover {
+            background: #1f6392;
+            color: white;
+        }
+        .btn-sm.btn-danger {
+            background: #fff1f2;
+            color: #b91c2c;
+        }
+        .btn-sm.btn-danger:hover {
+            background: #b91c2c;
+            color: white;
+        }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            border-radius: 60px;
+            animation: slideInRight 0.3s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .alert-success { background: linear-gradient(105deg, #10b981, #059669); color: white; }
+        .alert-danger { background: linear-gradient(105deg, #ef4444, #dc2626); color: white; }
+        .card-footer {
+            background: #fefefe;
+            border-top: 1px solid #eef2f8;
+            font-size: 0.75rem;
+            padding: 0.75rem 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .alert { min-width: 260px; right: 10px; top: 10px; }
+            .btn { padding: 8px 18px; font-size: 0.8rem; }
+            .table th, .table td { padding: 0.5rem 0.3rem; font-size: 0.7rem; }
+            .badge-blood { font-size: 0.6rem; padding: 2px 6px; }
+            .btn-sm.btn-primary, .btn-sm.btn-danger { padding: 0.2rem 0.5rem; font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:if="${msg}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> [[${msg}]]
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${err}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> [[${err}]]
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Add / Edit Form Card -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-user-plus"></i> <span id="formTitle">Add New Student</span>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/saveStudentData" id="studentForm">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label><i class="fas fa-id-card"></i> Student ID</label>
+                        <input type="text" name="id" id="studentId" class="form-control" required placeholder="Enter Student ID (e.g., R01) " autocomplete="off">
+                    </div>
+                    <div class="col-md-6">
+                        <label><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" name="name" id="studentName" class="form-control" required placeholder="Auto-filled">
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-venus-mars"></i> Gender</label>
+                        <select name="gender" id="studentGender" class="form-select">
+                            <option value="">-- Select --</option>
+                            <option>Male</option><option>Female</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" name="email" id="studentEmail" class="form-control" required placeholder="Enter your email">
+                    </div>
+                    <div class="col-md-4">
+                        <label><i class="fas fa-calendar-alt"></i> DOB</label>
+                        <input type="date" name="dob" id="studentDob" class="form-control" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label><i class="fas fa-tint"></i> Blood Group</label>
+                        <select name="blood" id="studentBlood" class="form-select">
+                            <option value="">-- Select --</option>
+                            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                            <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label><i class="fas fa-school"></i> Class</label>
+                        <select name="classs" id="studentClass" class="form-select" required>
+                            <option value="" disabled selected>-- Select --</option>
+                            <option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option>
+                            <option>VI</option><option>VII</option><option>VIII</option><option>IX</option><option>X</option>
+                            <option>XI</option><option>XII</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label><i class="fas fa-users"></i> Section</label>
+                        <select name="section" id="studentSection" class="form-select" required>
+                            <option value="">-- Select --</option>
+                            <option>A</option><option>B</option><option>C</option><option>D</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label><i class="fas fa-star"></i> Grade</label>
+                        <select name="grade" id="studentGrade" class="form-select">
+                            <option value="">-- Select --</option>
+                            <option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label><i class="fas fa-user-friends"></i> Parent/Guardian</label>
+                        <input type="text" name="pname" id="studentPname" class="form-control" required placeholder="Enter full name">
+                    </div>
+                    <div class="col-md-6">
+                        <label><i class="fas fa-phone-alt"></i> Mobile</label>
+                        <input type="tel" name="mobile" id="studentMobile" class="form-control" pattern="[0-9]{10}" required placeholder="Auto-filled">
+                    </div>
+                    <div class="col-12">
+                        <label><i class="fas fa-home"></i> Address</label>
+                        <textarea name="address" id="studentAddress" class="form-control" rows="2" required placeholder="Auto-filled "></textarea>
+                    </div>
+                </div>
+                <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+                    <button type="button" class="btn btn-close-custom" onclick="window.location.href='/#modules'">
+                        <i class="fas fa-times me-2"></i> Close
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                        <i class="fas fa-undo-alt me-2"></i> Clear
+                    </button>
+                    <button type="submit" id="submitBtn" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Records Table Card -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-user-graduate"></i> Student Records
+            <span class="badge bg-secondary ms-3"><i class="fas fa-compress-alt"></i> </span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle mb-0" id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>No</th><th>Student ID</th><th>Name</th><th>Gender</th><th>Email</th>
+                            <th>DOB</th><th>Blood</th><th>Class</th><th>Section</th>
+                            <th>Grade</th><th>Parent</th><th>Mobile</th>
+                            <th>Address</th><th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="student, stat : ${students}">
+                            <td th:text="${stat.count}">1</td>
+                            <td th:text="${student.id}">ADM001</td>
+                            <td th:text="${student.name}">John Doe</td>
+                            <td th:text="${student.gender}">Male</td>
+                            <td th:text="${student.email}">john@example.com</td>
+                            <td th:text="${student.dob}">2005-05-15</td>
+                            <td><span class="badge-blood" th:text="${student.blood}">O+</span></td>
+                            <td th:text="${student.classs}">X</td>
+                            <td th:text="${student.section}">A</td>
+                            <td th:text="${student.grade}">A</td>
+                            <td th:text="${student.pname}">Robert Doe</td>
+                            <td th:text="${student.mobile}">9876543210</td>
+                            <td th:text="${student.address}">123 Main St</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-sm btn-primary" title="Edit" th:onclick="editStudent([[${student}]])"><i class="fas fa-edit"></i> Edit</button>
+                                    <a th:href="@{/student/delete/{id}(id=${student.id})}" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash-alt"></i> Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(students)}">
+                            <td colspan="14" class="text-center py-4 text-muted">No student records found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-between flex-wrap">
+            <span><i class="fas fa-clock"></i> Last updated: <span th:text="${#dates.format(#dates.createNow(), 'dd-MM-yyyy HH:mm')}"></span></span>
+            <span><i class="fas fa-list-check"></i> Total records: <span th:text="${#lists.size(students)}">0</span></span>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const submitBtn = document.getElementById('submitBtn');
+    const formTitleSpan = document.getElementById('formTitle');
+    const studentTable = document.getElementById('studentTable');
+
+    // ✅ FIXED: Always populate from admission (overwrite existing values)
+    async function fetchAdmissionData(admissionId) {
+        if (!admissionId) return false;
+        try {
+            const response = await fetch(`/getAdmissionData/${admissionId}`);
+            if (response.ok) {
+                const data = await response.json();
+                // Always set values (no empty check)
+                document.getElementById('studentName').value = data.name || '';
+                document.getElementById('studentGender').value = data.gender || '';
+                document.getElementById('studentDob').value = data.dob || '';
+                document.getElementById('studentClass').value = data.classs || '';
+                document.getElementById('studentMobile').value = data.mobile || '';
+                document.getElementById('studentAddress').value = data.address || '';
+                return true;
+            } else if (response.status === 404) {
+                alert('Admission ID not found. Please enter a valid Admission ID first.');
+                // Optionally clear the fields that would have been filled
+                document.getElementById('studentName').value = '';
+                document.getElementById('studentGender').value = '';
+                document.getElementById('studentDob').value = '';
+                document.getElementById('studentClass').value = '';
+                document.getElementById('studentMobile').value = '';
+                document.getElementById('studentAddress').value = '';
+                return false;
+            } else {
+                alert('Error fetching admission data.');
+                return false;
+            }
+        } catch (error) {
+            alert('Could not connect to server.');
+            return false;
+        }
+    }
+
+    // Trigger auto-fill when user leaves ID field
+    document.getElementById('studentId').addEventListener('blur', function() {
+        const id = this.value.trim();
+        if (id) fetchAdmissionData(id);
+    });
+
+    function clearForm() {
+        submitBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save';
+        formTitleSpan.innerHTML = 'Add New Student';
+        document.getElementById('studentId').value = '';
+        document.getElementById('studentId').readOnly = false;
+        document.getElementById('studentName').value = '';
+        document.getElementById('studentGender').value = '';
+        document.getElementById('studentEmail').value = '';
+        document.getElementById('studentDob').value = '';
+        document.getElementById('studentBlood').value = '';
+        document.getElementById('studentClass').value = '';
+        document.getElementById('studentSection').value = '';
+        document.getElementById('studentGrade').value = '';
+        document.getElementById('studentPname').value = '';
+        document.getElementById('studentMobile').value = '';
+        document.getElementById('studentAddress').value = '';
+        document.getElementById('studentId').focus();
+    }
+
+    // Edit: Use student data directly – no auto‑fetch (preserve existing student info)
+    function editStudent(student) {
+        submitBtn.innerHTML = '<i class="fas fa-save me-2"></i> Update';
+        formTitleSpan.innerHTML = 'Edit Student';
+        document.getElementById('studentId').value = student.id;
+        document.getElementById('studentId').readOnly = true;
+        // Populate from student object (not from admission)
+        document.getElementById('studentName').value = student.name || '';
+        document.getElementById('studentGender').value = student.gender || '';
+        document.getElementById('studentEmail').value = student.email || '';
+        document.getElementById('studentDob').value = student.dob || '';
+        document.getElementById('studentBlood').value = student.blood || '';
+        document.getElementById('studentClass').value = student.classs || '';
+        document.getElementById('studentSection').value = student.section || '';
+        document.getElementById('studentGrade').value = student.grade || '';
+        document.getElementById('studentPname').value = student.pname || '';
+        document.getElementById('studentMobile').value = student.mobile || '';
+        document.getElementById('studentAddress').value = student.address || '';
+        document.querySelector('.card-body').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Width decrease function (no reset button)
+    function applyWidthDecrease() {
+        if (studentTable && !studentTable.classList.contains('compact-table')) {
+            studentTable.classList.add('compact-table');
+            const toast = document.createElement('div');
+            toast.className = 'position-fixed bottom-0 end-0 m-3 bg-dark text-white p-2 rounded-pill';
+            toast.style.fontSize = '0.75rem';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = '<i class="fas fa-compress-alt me-1"></i> Table width decreased (height unchanged)';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+    }
+
+    function detectAddOrUpdateAndDecreaseWidth() {
+        const successAlert = document.querySelector('.alert-success');
+        if (successAlert) {
+            const msgText = successAlert.innerText.toLowerCase();
+            const isAddOrUpdate = msgText.includes('saved') || msgText.includes('updated') || msgText.includes('added') ||
+                (msgText.includes('record') && msgText.includes('success') && !msgText.includes('deleted'));
+            if (isAddOrUpdate && !msgText.includes('deleted')) {
+                applyWidthDecrease();
+            }
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+        detectAddOrUpdateAndDecreaseWidth();
+    });
+
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(alert => {
+            let bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
+</body>
+</html>
